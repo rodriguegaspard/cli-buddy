@@ -37,5 +37,5 @@ while True:
     else:
         chat_completion = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=[{"role": "user", "content": user_input}])
         ai_response = chat_completion['choices'][0]['message']['content']
-        formatted_response = textwrap.wrap(ai_response, 150)
+        formatted_response = textwrap.wrap(ai_response, 100)
         print_response(formatted_response)
