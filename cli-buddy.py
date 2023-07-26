@@ -36,11 +36,19 @@ def currentWeather():
     city = input("City of location: ")
     r = requests.get('http://api.weatherapi.com/v1/current.json?key={0}&q={1}'.format(weather_api_key, city))
     result = r.json()
-    print("Current weather in {0}, {1}, {2} ({3}):".format(result["location"]["name"], result["location"]["region"], result["location"]["country"], result["location"]["localtime"]))
+    print("Current weather in {0}, {1}, {2} ({3}):".format(result["location"]["name"], result["location"]["region"], result["location"]["country"], getDatetime(result["location"]["localtime"])))
     print("Condition: {0}. (Cloud coverage: {1}%, Visibility: {2} km)".format(result["current"]["condition"]["text"], result["current"]["cloud"], result["current"]["vis_km"]))
     print("Temperature: {0}°C (Feels like {1}°C)".format(result["current"]["temp_c"], result["current"]["feelslike_c"]))
     print("Windspeed: {0} km/h, {1}° {2}".format(result["current"]["wind_kph"], result["current"]["wind_degree"], result["current"]["wind_dir"]))
     print("Air pressure: {0} mb, Humidity: {1}%, Precipitation: {2} mm".format(result["current"]["pressure_mb"], result["current"]["humidity"], result["current"]["precip_mm"]))
+
+def weatherForecast():
+    city = input("City or location: ")
+    r = requests.get('http://api.weatherapi.com/v1/forecast.json?key={0}&q={1}&days=3'.format(weather_api_key, city))
+    result = r.json()
+    print("Weather forecast in {0}, {1}, {2} ({3}):".format(result["location"]["name"], result["location"]["region"], result["location"]["country"], result["location"]["localtime"], getDatetime(result["location"]["localtime"])))
+    #for day in result["forecast"]["forecastday"]:
+    #   for hour in day["hour"]:
 
 def quit():
     raise SystemExit
