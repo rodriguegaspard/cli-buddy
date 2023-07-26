@@ -29,6 +29,7 @@ def help():
 ------------------
     :h = Shows commands
     :w = Get current weather
+    :wf = Get 3-day weather forecast
     :q = Closes the application
           """)
 
