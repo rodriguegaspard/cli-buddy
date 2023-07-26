@@ -15,8 +15,16 @@ def print_response(text):
 
 # Commands
 
-def weather():
-    city = input("Enter the city name: ")
+def help():
+    print("""CLI-BUDDY COMMANDS
+------------------
+    :h = Shows commands
+    :w = Get current weather
+    :q = Closes the application
+          """)
+
+def currentWeather():
+    city = input("City of location: ")
     r = requests.get('http://api.weatherapi.com/v1/current.json?key={0}&q={1}'.format(weather_api_key, city))
     result = r.json()
     print("Current weather in {0}, {1}, {2} ({3}):".format(result["location"]["name"], result["location"]["region"], result["location"]["country"], result["location"]["localtime"]))
@@ -24,14 +32,6 @@ def weather():
     print("Temperature: {0}°C (Feels like {1}°C)".format(result["current"]["temp_c"], result["current"]["feelslike_c"]))
     print("Windspeed: {0} km/h, {1}° {2}".format(result["current"]["wind_kph"], result["current"]["wind_degree"], result["current"]["wind_dir"]))
     print("Air pressure: {0} mb, Humidity: {1}%, Precipitation: {2} mm".format(result["current"]["pressure_mb"], result["current"]["humidity"], result["current"]["precip_mm"]))
-
-def help():
-    print("""CLI-BUDDY COMMANDS
-------------------
-    :h = Shows commands
-    :w = Get weather info
-    :q = Closes the application
-          """)
 
 def quit():
     raise SystemExit
