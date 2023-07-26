@@ -3,10 +3,18 @@ import openai
 import textwrap
 import time
 import requests
+from datetime import datetime
 
 # Load your API keys from environment variables
 openai.api_key = os.getenv("OPENAI_API_KEY")
 weather_api_key = os.getenv("WEATHER_API_KEY")
+
+def getDatetime(date_string):
+    # Left-zero padding for the local time, to render it ISO-8601 compatible
+    if len(date_string) < 16:
+        return datetime.fromisoformat(date_string[:11] + '0' + date_string[11:])
+    else:
+        return datetime.fromisoformat(date_string)
 
 def printResponse(text):
         for char in text:
