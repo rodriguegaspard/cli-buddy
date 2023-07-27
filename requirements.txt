@@ -12,6 +12,7 @@ openai==0.27.8
 pyinstaller==5.13.0
 pyinstaller-hooks-contrib==2023.6
 requests==2.31.0
+termcolor==2.3.0
 tqdm==4.65.0
 urllib3==2.0.4
 yarl==1.9.2

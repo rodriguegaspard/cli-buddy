@@ -4,6 +4,7 @@ import textwrap
 import time
 import requests
 from datetime import datetime
+from termcolor import colored, cprint
 
 # Load your API keys from environment variables
 openai.api_key = os.getenv("OPENAI_API_KEY")
