@@ -17,10 +17,10 @@ def getDatetime(date_string):
         return datetime.fromisoformat(date_string)
 
 def printResponse(text):
-        for char in text:
-            print(char, end='', flush=True)
-            time.sleep(0.01)
-        print()
+    for char in text:
+        print(char, end='', flush=True)
+        time.sleep(0.01)
+    print()
 
 # Commands
 
