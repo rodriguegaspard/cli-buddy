@@ -51,17 +51,18 @@ def weatherForecast():
     for day in result["forecast"]["forecastday"]:
         print("{0} ({1}°C - {2}°C, ~{3}°C) Wind: {4} km/h, Humidity: {5}".format(datetime.fromisoformat(day["date"]).date(), day["day"]["mintemp_c"], day["day"]["maxtemp_c"], day["day"]["avgtemp_c"], day["day"]["maxwind_kph"], day["day"]["avghumidity"]), end='')
         if day["day"]["daily_will_it_snow"]:
-            print(", Chance of snow: {0}% (~{1} cm)".format(day["day"]["daily_chance_of_snow"], day["day"]["totalsnow_cm"]))
+            print(", Chance of snow: {0}% (~{1} cm)".format(day["day"]["daily_chance_of_snow"], day["day"]["totalsnow_cm"]), end='')
         if day["day"]["daily_will_it_rain"]:
-            print(", Chance of rain: {0}% (~{1} mm)".format(day["day"]["daily_chance_of_rain"], day["day"]["totalprecip_mm"]))
-
+            print(", Chance of rain: {0}% (~{1} mm)".format(day["day"]["daily_chance_of_rain"], day["day"]["totalprecip_mm"]), end='')
+        print("")
         for forecast_hour in (hour for hour in day["hour"] if day["hour"].index(hour)%2 == 0):
-            print("{0}: {1} ({2}°C, Humidity: {3}%, Clouds: {4}%, Wind: {5} km/h)".format(datetime.fromisoformat(forecast_hour["time"]).time(), forecast_hour["condition"]["text"], forecast_hour["temp_c"], forecast_hour["humidity"], forecast_hour["cloud"], forecast_hour["wind_kph"]), end='')
-            if forecast_hour["will_it_snow"]:
-                print(" - Chance of snow: {0}%".format(forecast_hour["chance_of_snow"]), end='')
-            if forecast_hour["will_it_rain"]:
-                print(" - Chance of rain: {0}% ({1} mm)".format(forecast_hour["chance_of_rain"], forecast_hour["precip_mm"]), end='')
-            print("")
+            if datetime.fromisoformat(forecast_hour["time"]) > datetime.fromisoformat(result["current"]["last_updated"]):
+                print("{0}: {1} ({2}°C, Humidity: {3}%, Clouds: {4}%, Wind: {5} km/h)".format(datetime.fromisoformat(forecast_hour["time"]).time(), forecast_hour["condition"]["text"], forecast_hour["temp_c"], forecast_hour["humidity"], forecast_hour["cloud"], forecast_hour["wind_kph"]), end='')
+                if forecast_hour["will_it_snow"]:
+                    print(" - Chance of snow: {0}%".format(forecast_hour["chance_of_snow"]), end='')
+                if forecast_hour["will_it_rain"]:
+                    print(" - Chance of rain: {0}% ({1} mm)".format(forecast_hour["chance_of_rain"], forecast_hour["precip_mm"]), end='')
+                print("")
 def quit():
     raise SystemExit
 
