@@ -37,7 +37,7 @@ def currentWeather():
     city = input("City of location: ")
     r = requests.get('http://api.weatherapi.com/v1/current.json?key={0}&q={1}'.format(weather_api_key, city))
     result = r.json()
-    print("Current weather in {0}, {1}, {2} ({3}):".format(result["location"]["name"], result["location"]["region"], result["location"]["country"], getDatetime(result["location"]["localtime"])))
+    print("Current weather in {0}, {1}, {2} (Last updated: {3}):".format(result["location"]["name"], result["location"]["region"], result["location"]["country"], getDatetime(result["current"]["last_updated"])))
     print("Condition: {0}. (Cloud coverage: {1}%, Visibility: {2} km)".format(result["current"]["condition"]["text"], result["current"]["cloud"], result["current"]["vis_km"]))
     print("Temperature: {0}°C (Feels like {1}°C)".format(result["current"]["temp_c"], result["current"]["feelslike_c"]))
     print("Windspeed: {0} km/h, {1}° {2}".format(result["current"]["wind_kph"], result["current"]["wind_degree"], result["current"]["wind_dir"]))
@@ -47,10 +47,21 @@ def weatherForecast():
     city = input("City or location: ")
     r = requests.get('http://api.weatherapi.com/v1/forecast.json?key={0}&q={1}&days=3'.format(weather_api_key, city))
     result = r.json()
-    print("Weather forecast in {0}, {1}, {2} ({3}):".format(result["location"]["name"], result["location"]["region"], result["location"]["country"], result["location"]["localtime"], getDatetime(result["location"]["localtime"])))
-    #for day in result["forecast"]["forecastday"]:
-    #   for hour in day["hour"]:
+    print("Weather forecast in {0}, {1}, {2} (Last updated: {3}):".format(result["location"]["name"], result["location"]["region"], result["location"]["country"], result["current"]["last_updated"]))
+    for day in result["forecast"]["forecastday"]:
+        print("{0} ({1}°C - {2}°C, ~{3}°C) Wind: {4} km/h, Humidity: {5}".format(datetime.fromisoformat(day["date"]).date(), day["day"]["mintemp_c"], day["day"]["maxtemp_c"], day["day"]["avgtemp_c"], day["day"]["maxwind_kph"], day["day"]["avghumidity"]), end='')
+        if day["day"]["daily_will_it_snow"]:
+            print(", Chance of snow: {0}% (~{1} cm)".format(day["day"]["daily_chance_of_snow"], day["day"]["totalsnow_cm"]))
+        if day["day"]["daily_will_it_rain"]:
+            print(", Chance of rain: {0}% (~{1} mm)".format(day["day"]["daily_chance_of_rain"], day["day"]["totalprecip_mm"]))
 
+        for forecast_hour in (hour for hour in day["hour"] if day["hour"].index(hour)%2 == 0):
+            print("{0}: {1} ({2}°C, Humidity: {3}%, Clouds: {4}%, Wind: {5} km/h)".format(datetime.fromisoformat(forecast_hour["time"]).time(), forecast_hour["condition"]["text"], forecast_hour["temp_c"], forecast_hour["humidity"], forecast_hour["cloud"], forecast_hour["wind_kph"]), end='')
+            if forecast_hour["will_it_snow"]:
+                print(" - Chance of snow: {0}%".format(forecast_hour["chance_of_snow"]), end='')
+            if forecast_hour["will_it_rain"]:
+                print(" - Chance of rain: {0}% ({1} mm)".format(forecast_hour["chance_of_rain"], forecast_hour["precip_mm"]), end='')
+            print("")
 def quit():
     raise SystemExit
 
