@@ -40,7 +40,7 @@ def currentWeather():
     result = r.json()
     cprint("\nCurrent weather in {0}, {1}, {2} (Last updated: {3}):".format(result["location"]["name"], result["location"]["region"], result["location"]["country"], getDatetime(result["current"]["last_updated"])), "light_yellow", attrs=["bold", "underline"])
     print("Condition: {0}".format(result["current"]["condition"]["text"]))
-    print("Cloud coverage: {1:3}%, Visibility: {2:2} km)".format(result["current"]["cloud"], result["current"]["vis_km"]))
+    print("Cloud coverage: {0:3}%, Visibility: {1:2} km".format(result["current"]["cloud"], result["current"]["vis_km"]))
     print("Temperature: {0:5}°C (Feels like {1:5}°C)".format(result["current"]["temp_c"], result["current"]["feelslike_c"]))
     print("Windspeed: {0:5} km/h, {1:3}° {2:3}".format(result["current"]["wind_kph"], result["current"]["wind_degree"], result["current"]["wind_dir"]))
     print("Air pressure: {0:6} mb, Humidity: {1:3}%".format(result["current"]["pressure_mb"], result["current"]["humidity"]))
