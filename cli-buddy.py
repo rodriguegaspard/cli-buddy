@@ -45,7 +45,7 @@ def currentWeather():
     print("Windspeed: {0:5} km/h, {1:3}° {2:3}".format(result["current"]["wind_kph"], result["current"]["wind_degree"], result["current"]["wind_dir"]))
     print("Air pressure: {0:6} mb, Humidity: {1:3}%".format(result["current"]["pressure_mb"], result["current"]["humidity"]))
     if result["current"]["precip_mm"]:
-        print("Precipitation: {}".format(result["current"]["precip_mm"]))
+        print("Precipitation: {} mm".format(result["current"]["precip_mm"]))
 
 def weatherForecast():
     city = input("City or location: ")
