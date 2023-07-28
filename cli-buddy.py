@@ -1,6 +1,5 @@
 import os
 import openai
-import textwrap
 import time
 import requests
 from datetime import datetime
@@ -31,6 +30,7 @@ def help():
     :h = Shows commands
     :w = Get current weather
     :wf = Get 3-day weather forecast
+    :say = Talk to ChatGPT
     :q = Closes the application
           """)
 
@@ -67,12 +67,32 @@ def weatherForecast():
                 if forecast_hour["will_it_rain"]:
                     print(" - Rain: {0:3}% ({1:5} mm)".format(forecast_hour["chance_of_rain"], forecast_hour["precip_mm"]), end='')
                 print("")
+
+def AIQuery():
+    print("Enter or paste your query. Ctrl-D or Ctrl-Z (Windows) to send it.\n> ", end='')
+    prompt = []
+    while True:
+        try:
+            line = input()
+        except EOFError:
+            print("\n> ", end='')
+            break
+        prompt.append(line)
+    query = '\n'.join(prompt)
+    if not query:
+        print("Query is empty!")
+    else:
+        chat_completion = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=[{"role": "user", "content": query}])
+        ai_response = chat_completion['choices'][0]['message']['content']
+        printResponse(ai_response)
+
 def quit():
     raise SystemExit
 
 commands = {":h" : help,
             ":w" : currentWeather,
             ":wf" : weatherForecast,
+            ":say": AIQuery,
             ":q" : quit,
             }
 
@@ -83,7 +103,5 @@ while True:
     if user_input in commands.keys():
         commands[user_input]()
     else:
-        chat_completion = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=[{"role": "user", "content": user_input}])
-        ai_response = chat_completion['choices'][0]['message']['content']
-        formatted_response = textwrap.fill(ai_response, 100)
-        printResponse(formatted_response)
+        print("Wrong command. Type :h for a list of all commands.")
+
