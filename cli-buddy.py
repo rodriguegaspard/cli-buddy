@@ -30,6 +30,7 @@ def help():
     :h = Shows commands
     :w = Get current weather
     :wf = Get 3-day weather forecast
+    :astro = Get 3-day astronomical forecast
     :say = Talk to ChatGPT
     :q = Closes the application
           """)
@@ -68,6 +69,14 @@ def weatherForecast():
                     print(" - Rain: {0:3}% ({1:5} mm)".format(forecast_hour["chance_of_rain"], forecast_hour["precip_mm"]), end='')
                 print("")
 
+def astroForecast():
+    city = input("City or location: ")
+    r = requests.get('http://api.weatherapi.com/v1/forecast.json?key={0}&q={1}&days=3'.format(weather_api_key, city))
+    result = r.json()
+    cprint("Astronomical forecast in {0}, {1}, {2} (Last updated: {3})".format(result["location"]["name"], result["location"]["region"], result["location"]["country"], result["current"]["last_updated"]), "light_blue", attrs=["bold", "underline"])
+    for day in result["forecast"]["forecastday"]:
+        print("\n{0} - (sunrise: {1:7}, sunset: {2:7}. moonrise: {3:7}, moonset: {4:7})\n{5:15} ({6:3}% illumination)".format(day["date"], day["astro"]["sunrise"], day["astro"]["sunset"], day["astro"]["moonrise"], day["astro"]["moonset"], day["astro"]["moon_phase"], day["astro"]["moon_illumination"]))
+
 def AIQuery():
     print("Enter or paste your query. Ctrl-D or Ctrl-Z (Windows) to send it.\n> ", end='')
     prompt = []
@@ -92,6 +101,7 @@ def quit():
 commands = {":h" : help,
             ":w" : currentWeather,
             ":wf" : weatherForecast,
+            ":astro" : astroForecast,
             ":say": AIQuery,
             ":q" : quit,
             }
