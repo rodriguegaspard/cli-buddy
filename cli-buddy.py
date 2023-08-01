@@ -61,13 +61,12 @@ def weatherForecast():
             cprint(", Rain: {0}% (~{1} mm)".format(day["day"]["daily_chance_of_rain"], day["day"]["totalprecip_mm"]), "white", attrs=["bold"], end='')
         print("")
         for forecast_hour in (hour for hour in day["hour"] if day["hour"].index(hour)%2 == 0):
-            if datetime.fromisoformat(forecast_hour["time"]) > datetime.fromisoformat(result["current"]["last_updated"]):
-                print("{0:2d}h : {1:30} ({2:5}°C, Humidity: {3:3}%, Clouds: {4:3}%, Wind: {5:5} km/h)".format(datetime.fromisoformat(forecast_hour["time"]).time().hour, forecast_hour["condition"]["text"], forecast_hour["temp_c"], forecast_hour["humidity"], forecast_hour["cloud"], forecast_hour["wind_kph"]), end='')
-                if forecast_hour["will_it_snow"]:
-                    print(" - Snow: {0:3}%".format(forecast_hour["chance_of_snow"]), end='')
-                if forecast_hour["will_it_rain"]:
-                    print(" - Rain: {0:3}% ({1:5} mm)".format(forecast_hour["chance_of_rain"], forecast_hour["precip_mm"]), end='')
-                print("")
+            print("{0:2d}h : {1:30} ({2:5}°C, Humidity: {3:3}%, Clouds: {4:3}%, Wind: {5:5} km/h)".format(datetime.fromisoformat(forecast_hour["time"]).time().hour, forecast_hour["condition"]["text"], forecast_hour["temp_c"], forecast_hour["humidity"], forecast_hour["cloud"], forecast_hour["wind_kph"]), end='')
+            if forecast_hour["will_it_snow"]:
+                print(" - Snow: {0:3}%".format(forecast_hour["chance_of_snow"]), end='')
+            if forecast_hour["will_it_rain"]:
+                print(" - Rain: {0:3}% ({1:5} mm)".format(forecast_hour["chance_of_rain"], forecast_hour["precip_mm"]), end='')
+            print("")
 
 def astroForecast():
     city = input("City or location: ")
@@ -75,8 +74,10 @@ def astroForecast():
     result = r.json()
     cprint("Astronomical forecast in {0}, {1}, {2} (Last updated: {3})".format(result["location"]["name"], result["location"]["region"], result["location"]["country"], result["current"]["last_updated"]), "light_blue", attrs=["bold", "underline"])
     for day in result["forecast"]["forecastday"]:
-        print("\n{0} - (sunrise: {1:7}, sunset: {2:7}. moonrise: {3:7}, moonset: {4:7})\n{5:15} ({6:3}% illumination)".format(day["date"], day["astro"]["sunrise"], day["astro"]["sunset"], day["astro"]["moonrise"], day["astro"]["moonset"], day["astro"]["moon_phase"], day["astro"]["moon_illumination"]))
-
+        print("\n{0} - (Sun: {1:7} -> {2:7}, Moon: {3:7} -> {4:7}) - {5:15} ({6:3}% illumination)".format(day["date"], day["astro"]["sunrise"], day["astro"]["sunset"], day["astro"]["moonrise"], day["astro"]["moonset"], day["astro"]["moon_phase"], day["astro"]["moon_illumination"]))
+        for astro_hour in (hour for hour in day["hour"] if day["hour"].index(hour)%2==0):
+            print("{0:2}h - {1:30} (Visibility: {2:4} km, Cloud coverage: {3:3}%)".format(datetime.fromisoformat(astro_hour["time"]).time().hour, astro_hour["condition"]["text"], astro_hour["vis_km"], astro_hour["cloud"]))
+            
 def AIQuery():
     print("Enter or paste your query. Ctrl-D or Ctrl-Z (Windows) to send it.\n> ", end='')
     prompt = []
