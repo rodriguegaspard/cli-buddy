@@ -54,7 +54,7 @@ def weatherForecast():
     result = r.json()
     cprint("\nWeather forecast in {0}, {1}, {2} (Last updated: {3}):".format(result["location"]["name"], result["location"]["region"], result["location"]["country"], result["current"]["last_updated"]), "light_yellow" , attrs=["bold", "underline"])
     for day in result["forecast"]["forecastday"]:
-        cprint("\n{0} (min: {1:5}°C  max: {2:5}°C, avg: {3:5}°C) Wind: {4:5} km/h, Humidity: {5:.0f}%".format(datetime.fromisoformat(day["date"]).date(), day["day"]["mintemp_c"], day["day"]["maxtemp_c"], day["day"]["avgtemp_c"], day["day"]["maxwind_kph"], day["day"]["avghumidity"]), "white", attrs=["bold"], end='')
+        cprint("\n{0} (min: {1:5}°C  max: {2:5}°C, avg: {3:5}°C) Wind: {4:5} km/h, Humidity: {5:.0f}%".format(colored(datetime.fromisoformat(day["date"]).date(), "yellow", attrs=["underline"]), day["day"]["mintemp_c"], day["day"]["maxtemp_c"], day["day"]["avgtemp_c"], day["day"]["maxwind_kph"], day["day"]["avghumidity"]), "white", attrs=["bold"], end='')
         if day["day"]["daily_will_it_snow"]:
             cprint(", Snow: {0}% (~{1} cm)".format(day["day"]["daily_chance_of_snow"], day["day"]["totalsnow_cm"]), "white", attrs=["bold"], end='')
         if day["day"]["daily_will_it_rain"]:
@@ -72,9 +72,9 @@ def astroForecast():
     city = input("City or location: ")
     r = requests.get('http://api.weatherapi.com/v1/forecast.json?key={0}&q={1}&days=3'.format(weather_api_key, city))
     result = r.json()
-    cprint("Astronomical forecast in {0}, {1}, {2} (Last updated: {3})".format(result["location"]["name"], result["location"]["region"], result["location"]["country"], result["current"]["last_updated"]), "light_blue", attrs=["bold", "underline"])
+    cprint("Astronomical forecast in {0}, {1}, {2} (Last updated: {3})".format(result["location"]["name"], result["location"]["region"], result["location"]["country"], result["current"]["last_updated"]), "light_cyan", attrs=["bold", "underline"])
     for day in result["forecast"]["forecastday"]:
-        print("\n{0} - (Sun: {1:7} -> {2:7}, Moon: {3:7} -> {4:7}) - {5:15} ({6:3}% illumination)".format(day["date"], day["astro"]["sunrise"], day["astro"]["sunset"], day["astro"]["moonrise"], day["astro"]["moonset"], day["astro"]["moon_phase"], day["astro"]["moon_illumination"]))
+        print("\n{0} - (Sun: {1:7} -> {2:7}, Moon: {3:7} -> {4:7}) - {5:15} ({6:3}% illumination)".format(colored(day["date"],"light_cyan", attrs=["underline"]), day["astro"]["sunrise"], day["astro"]["sunset"], day["astro"]["moonrise"], day["astro"]["moonset"], day["astro"]["moon_phase"], day["astro"]["moon_illumination"]))
         for astro_hour in (hour for hour in day["hour"] if day["hour"].index(hour)%2==0):
             print("{0:2}h - {1:30} (Visibility: {2:4} km, Cloud coverage: {3:3}%)".format(datetime.fromisoformat(astro_hour["time"]).time().hour, astro_hour["condition"]["text"], astro_hour["vis_km"], astro_hour["cloud"]))
             
