@@ -88,23 +88,32 @@ def convertCurrency():
     desired_currency = input("Enter the desired currency: ")
     print("{0} {1} ({2}) is currently {3} {4} ({5})".format(amount, codes.get_symbol(starting_currency), codes.get_currency_name(starting_currency), rates.convert(starting_currency, desired_currency, amount), codes.get_symbol(desired_currency), codes.get_currency_name(desired_currency)))
 
-def AIQuery():
-    print("Enter or paste your query. Ctrl-D or Ctrl-Z (Windows) to send it.\n> ", end='')
-    prompt = []
+def userPrompt():
+    prompt=[]
     while True:
         try:
             line = input()
         except EOFError:
-            print("\n> ", end='')
+            print()
             break
-        prompt.append(line)
-    query = '\n'.join(prompt)
-    if not query:
-        print("Query is empty!")
-    else:
-        chat_completion = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=[{"role": "user", "content": query}])
-        ai_response = chat_completion['choices'][0]['message']['content']
-        printResponse(ai_response)
+    prompt.append(line)
+    return '\n'.join(prompt)
+
+def AIQuery():
+    ai_conversation = [{"role": "system", "content": "You are a wizard with unlimited wisdom"}]
+    print("Enter or paste your query. Ctrl-D or Ctrl-Z (Windows) to send it. :q to exit the conversation.")
+    while True:
+        print("\nuser> ", end='')
+        query = userPrompt()
+        if not query or query == ":q":
+            break
+        else:
+            print("\ngpt> ", end='')
+            ai_conversation.append({"role": "user", "content": query})
+            chat_completion = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=ai_conversation)
+            ai_response = chat_completion['choices'][0]['message']['content']
+            ai_conversation.append({"role": "assistant", "content": ai_response})
+            printResponse(ai_response)
 
 def quit():
     raise SystemExit
