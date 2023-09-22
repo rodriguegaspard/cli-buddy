@@ -2,6 +2,7 @@ import os
 import openai
 import time
 import requests
+import re
 from datetime import datetime
 from termcolor import colored, cprint
 from forex_python.converter import CurrencyRates, CurrencyCodes
@@ -89,6 +90,7 @@ def convertCurrency():
     print("{0} {1} ({2}) is currently {3} {4} ({5})".format(amount, codes.get_symbol(starting_currency), codes.get_currency_name(starting_currency), rates.convert(starting_currency, desired_currency, amount), codes.get_symbol(desired_currency), codes.get_currency_name(desired_currency)))
 
 def userPrompt():
+    line=""
     prompt=[]
     while True:
         try:
@@ -96,16 +98,18 @@ def userPrompt():
         except EOFError:
             print()
             break
+        if re.search("^:q$|^:quit$", line):
+            return -1
     prompt.append(line)
     return '\n'.join(prompt)
 
 def AIQuery():
     ai_conversation = [{"role": "system", "content": "You are a wizard with unlimited wisdom"}]
-    print("Enter or paste your query. Ctrl-D or Ctrl-Z (Windows) to send it. :q to exit the conversation.")
+    print("Enter or paste your query. Ctrl-D or Ctrl-Z (Windows) to send it. :q or :quit to exit the conversation.")
     while True:
         print("\nuser> ", end='')
         query = userPrompt()
-        if not query or query == ":q":
+        if not query or query == -1:
             break
         else:
             print("\ngpt> ", end='')
