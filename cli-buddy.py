@@ -5,7 +5,6 @@ import requests
 import re
 from datetime import datetime
 from termcolor import colored, cprint
-from forex_python.converter import CurrencyRates, CurrencyCodes
 
 # Load your API keys from environment variables
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -33,7 +32,6 @@ def help():
     :w = Get current weather
     :wf = Get 3-day weather forecast
     :astro = Get 3-day astronomical forecast
-    :forex : Converts an amount in a particular currency into another, using latest currency rates
     :say = Talk to ChatGPT
     :q = Closes the application
           """)
@@ -81,14 +79,6 @@ def astroForecast():
         for astro_hour in (hour for hour in day["hour"] if day["hour"].index(hour)%2==0):
             print("{0:2}h - {1:30} (Visibility: {2:4} km, Cloud coverage: {3:3}%)".format(datetime.fromisoformat(astro_hour["time"]).time().hour, astro_hour["condition"]["text"], astro_hour["vis_km"], astro_hour["cloud"]))
 
-def convertCurrency():
-    rates = CurrencyRates()
-    codes = CurrencyCodes()
-    amount = float(input("Enter the amount: "))
-    starting_currency = input("Enter the currency for the amount entered: ")
-    desired_currency = input("Enter the desired currency: ")
-    print("{0} {1} ({2}) is currently {3} {4} ({5})".format(amount, codes.get_symbol(starting_currency), codes.get_currency_name(starting_currency), rates.convert(starting_currency, desired_currency, amount), codes.get_symbol(desired_currency), codes.get_currency_name(desired_currency)))
-
 def userPrompt():
     line=""
     prompt=[]
@@ -126,7 +116,6 @@ commands = {":h" : help,
             ":w" : currentWeather,
             ":wf" : weatherForecast,
             ":astro" : astroForecast,
-            ":forex" : convertCurrency,
             ":say": AIQuery,
             ":q" : quit,
             }
