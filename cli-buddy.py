@@ -90,7 +90,7 @@ def userPrompt():
             break
         if re.search("^:q$|^:quit$", line):
             return -1
-    prompt.append(line)
+        prompt.append(line)
     return '\n'.join(prompt)
 
 def AIQuery():
