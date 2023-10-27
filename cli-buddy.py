@@ -36,6 +36,14 @@ def help():
     :q = Closes the application
           """)
 
+def gptHelp():
+    print("""CLI-BUDDY GPT COMMANDS
+------------------
+    :h = Shows commands
+    :p = Change ChatGPT's personality
+    :q = Closes the conversation
+          """)
+
 def currentWeather():
     city = input("City of location: ")
     r = requests.get('http://api.weatherapi.com/v1/current.json?key={0}&q={1}'.format(weather_api_key, city))
@@ -89,18 +97,39 @@ def userPrompt():
             print()
             break
         if re.search("^:q$|^:quit$", line):
-            return -1
-        prompt.append(line)
+            return None
+        elif re.search("^:h$|^:p$", line):
+           return line
+        elif re.search("^:.+$", line):
+           print("Unknown command.")
+           return None
+        else:
+            prompt.append(line)
     return '\n'.join(prompt)
 
+def changePersonality():
+        print("\ngpt> ", end='')
+        printResponse("What should my new personality be?")
+        print("\nuser> ", end='')
+        personality = userPrompt()
+        if not personality or re.search("^:h$|^:p$", personality):
+            print("\ngpt> Sorry, the personality you entered is not valid. Try again!")
+        else:
+            new_personality = [{"role": "system", "content": personality}]
+            return new_personality
+
 def AIQuery():
-    ai_conversation = [{"role": "system", "content": "You are a wizard with unlimited wisdom"}]
+    ai_conversation = [{"role": "system", "content": "You are a extremely gentlemanly and posh butler with great knowledge."}]
     print("Enter or paste your query. Ctrl-D or Ctrl-Z (Windows) to send it. :q or :quit to exit the conversation.")
     while True:
         print("\nuser> ", end='')
         query = userPrompt()
-        if not query or query == -1:
+        if not query:
             break
+        elif query == ":h":
+            gptHelp()
+        elif query == ":p":
+            ai_conversation = changePersonality()
         else:
             print("\ngpt> ", end='')
             ai_conversation.append({"role": "user", "content": query})
