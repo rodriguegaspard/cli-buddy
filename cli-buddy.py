@@ -119,7 +119,7 @@ def changePersonality():
             return new_personality
 
 def AIQuery():
-    ai_conversation = [{"role": "system", "content": "You are a extremely gentlemanly and posh butler with great knowledge."}]
+    ai_conversation = [{"role": "system", "content": "You are a computer assistant. Be concise in your responses."}]
     print("Enter or paste your query. Ctrl-D or Ctrl-Z (Windows) to send it. :q or :quit to exit the conversation.")
     while True:
         print("\nuser> ", end='')
