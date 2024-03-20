@@ -17,12 +17,6 @@ def getDatetime(date_string):
     else:
         return datetime.fromisoformat(date_string)
 
-def printResponse(text):
-    for char in text:
-        print(char, end='', flush=True)
-        time.sleep(0.01)
-    print()
-
 # Commands
 
 def help():
@@ -109,7 +103,7 @@ def userPrompt():
 
 def changePersonality():
         print("\ngpt> ", end='')
-        printResponse("What should my new personality be?")
+        print("What should my new personality be?")
         print("\nuser> ", end='')
         personality = userPrompt()
         if not personality or re.search("^:h$|^:p$", personality):
@@ -136,7 +130,7 @@ def AIQuery():
             chat_completion = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=ai_conversation)
             ai_response = chat_completion['choices'][0]['message']['content']
             ai_conversation.append({"role": "assistant", "content": ai_response})
-            printResponse(ai_response)
+            print(ai_response)
 
 def quit():
     raise SystemExit
