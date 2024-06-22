@@ -1,5 +1,7 @@
 import os
-import openai
+from openai import OpenAI
+
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 import time
 import requests
 import re
@@ -7,7 +9,6 @@ from datetime import datetime
 from termcolor import colored, cprint
 
 # Load your API keys from environment variables
-openai.api_key = os.getenv("OPENAI_API_KEY")
 weather_api_key = os.getenv("WEATHER_API_KEY")
 
 def getDatetime(date_string):
@@ -127,8 +128,8 @@ def AIQuery():
         else:
             print("\ngpt> ", end='')
             ai_conversation.append({"role": "user", "content": query})
-            chat_completion = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=ai_conversation)
-            ai_response = chat_completion['choices'][0]['message']['content']
+            chat_completion = client.chat.completions.create(model="gpt-3.5-turbo", messages=ai_conversation)
+            ai_response = chat_completion.choices[0].message.content
             ai_conversation.append({"role": "assistant", "content": ai_response})
             print(ai_response)
 
