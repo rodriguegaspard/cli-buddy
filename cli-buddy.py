@@ -1,14 +1,12 @@
 import os
 from openai import OpenAI
-
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-import time
 import requests
 import re
 from datetime import datetime
 from termcolor import colored, cprint
 
 # Load your API keys from environment variables
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 weather_api_key = os.getenv("WEATHER_API_KEY")
 
 def getDatetime(date_string):
