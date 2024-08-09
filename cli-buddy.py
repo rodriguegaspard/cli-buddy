@@ -23,18 +23,18 @@ def help():
     print("""CLI-BUDDY COMMANDS
 ------------------
     :h = Shows commands
-    :w = Get current weather
+    :cw = Get current weather
     :wf = Get 3-day weather forecast
     :astro = Get 3-day astronomical forecast
-    :say = Talk to ChatGPT
+    :w = Talk to ChatGPT
     :q = Closes the application
           """)
 
-def gptHelp():
+def AIHelp():
     print("""CLI-BUDDY GPT COMMANDS
 ------------------
     :h = Shows commands
-    :p = Change ChatGPT's personality
+    Enter = Write prompt
     :q = Closes the conversation
           """)
 
@@ -100,7 +100,7 @@ def prompt(ai_conversation):
 
 def AIQuery():
     ai_conversation = [{"role": "system", "content": "You are a computer assistant. Be concise in your responses."}]
-    print("Enter or paste your query. Ctrl-D or Ctrl-Z (Windows) to send it. :q or :quit to exit the conversation.")
+    print("Enter to open the default editor and write a prompt. :q or :quit to exit the conversation.")
     while True:
         print("\nuser> ", end='')
         user_input = input()
@@ -113,11 +113,16 @@ def AIQuery():
 def quit():
     raise SystemExit
 
+ai_commands = {"" : prompt,
+               ":h" : AIHelp,
+               ":q": quit
+               }
+
 commands = {":h" : help,
-            ":w" : currentWeather,
+            ":cw" : currentWeather,
             ":wf" : weatherForecast,
             ":astro" : astroForecast,
-            ":say": AIQuery,
+            ":w": AIQuery,
             ":q" : quit,
             }
 
