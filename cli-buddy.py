@@ -2,6 +2,7 @@ import os
 from openai import OpenAI
 import requests
 import re
+import tempfile
 from datetime import datetime
 from termcolor import colored, cprint
 
@@ -80,56 +81,34 @@ def astroForecast():
         for astro_hour in (hour for hour in day["hour"] if day["hour"].index(hour)%2==0):
             print("{0:2}h - {1:30} (Visibility: {2:4} km, Cloud coverage: {3:3}%)".format(datetime.fromisoformat(astro_hour["time"]).time().hour, astro_hour["condition"]["text"], astro_hour["vis_km"], astro_hour["cloud"]))
 
-def userPrompt():
-    line=""
-    prompt=[]
-    while True:
-        try:
-            line = input()
-        except EOFError:
-            print()
-            break
-        if re.search("^:q$|^:quit$", line):
-            return None
-        elif re.search("^:h$|^:p$", line):
-           return line
-        elif re.search("^:.+$", line):
-           print("Unknown command.")
-           return None
-        else:
-            prompt.append(line)
-    return '\n'.join(prompt)
-
-def changePersonality():
+def prompt(ai_conversation):
+    with tempfile.NamedTemporaryFile(mode='w', delete=False) as temp_file:
+        temp_file.write("")
+        temp_file.close()
+        file_path = temp_file.name
+    os.system('%s %s' % (os.getenv('EDITOR'), file_path))
+    with open(file_path, 'r') as file:
+        content = file.read()
+    if content:
+        print(content, end='')
         print("\ngpt> ", end='')
-        print("What should my new personality be?")
-        print("\nuser> ", end='')
-        personality = userPrompt()
-        if not personality or re.search("^:h$|^:p$", personality):
-            print("\ngpt> Sorry, the personality you entered is not valid. Try again!")
-        else:
-            new_personality = [{"role": "system", "content": personality}]
-            return new_personality
+        ai_conversation.append({"role": "user", "content": content})
+        chat_completion = client.chat.completions.create(model="gpt-3.5-turbo", messages=ai_conversation)
+        ai_response = chat_completion.choices[0].message.content
+        ai_conversation.append({"role": "assistant", "content": ai_response})
+        print(ai_response)
 
 def AIQuery():
     ai_conversation = [{"role": "system", "content": "You are a computer assistant. Be concise in your responses."}]
     print("Enter or paste your query. Ctrl-D or Ctrl-Z (Windows) to send it. :q or :quit to exit the conversation.")
     while True:
         print("\nuser> ", end='')
-        query = userPrompt()
-        if not query:
-            break
-        elif query == ":h":
-            gptHelp()
-        elif query == ":p":
-            ai_conversation = changePersonality()
-        else:
-            print("\ngpt> ", end='')
-            ai_conversation.append({"role": "user", "content": query})
-            chat_completion = client.chat.completions.create(model="gpt-3.5-turbo", messages=ai_conversation)
-            ai_response = chat_completion.choices[0].message.content
-            ai_conversation.append({"role": "assistant", "content": ai_response})
-            print(ai_response)
+        user_input = input()
+        if user_input in ai_commands.keys():
+            if user_input == "" or user_input == ":p":
+                ai_commands[user_input](ai_conversation)
+            else:
+                ai_commands[user_input]()
 
 def quit():
     raise SystemExit
