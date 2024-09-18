@@ -5,6 +5,7 @@ import re
 import tempfile
 from datetime import datetime
 from termcolor import colored, cprint
+import subprocess
 
 # Load your API keys from environment variables
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -27,6 +28,7 @@ def help():
     :wf = Get 3-day weather forecast
     :astro = Get 3-day astronomical forecast
     :w = Talk to ChatGPT
+    :ch = Browse cheat.sh
     :q = Closes the application
           """)
 
@@ -110,6 +112,12 @@ def AIQuery():
             else:
                 ai_commands[user_input]()
 
+def chtQuery():
+    url = "https://cheat.sh/"
+    query = url + input("Query : ")
+    output = subprocess.run(f"curl {query}", shell=True, capture_output=True, text=True)
+    print(output.stdout)
+
 def quit():
     raise SystemExit
 
@@ -123,6 +131,7 @@ commands = {":h" : help,
             ":wf" : weatherForecast,
             ":astro" : astroForecast,
             ":w": AIQuery,
+            ":ch": chtQuery,
             ":q" : quit,
             }
 
