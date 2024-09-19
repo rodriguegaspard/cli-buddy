@@ -1,13 +1,13 @@
 import os
 import requests
-import re
-import tempfile
+from urllib import parse
 from datetime import datetime
 from termcolor import colored, cprint
 import subprocess
 
 # Load your API keys from environment variables
 weather_api_key = os.getenv("WEATHER_API_KEY")
+wolfram_api_key = os.getenv("WOLFRAM_API_KEY")
 
 def getDatetime(date_string):
     # Left-zero padding for the local time, to render it ISO-8601 compatible
@@ -23,9 +23,10 @@ def help():
 ------------------
     :h = Shows commands
     :cw = Get current weather
-    :wf = Get 3-day weather forecast
+    :fc = Get 3-day weather forecast
     :astro = Get 3-day astronomical forecast
-    :ch = Browse cheat.sh
+    :c = Browse cheat.sh
+    :w = Query Wolfram's Short Answers API
     :q = Closes the application
           """)
 
@@ -78,14 +79,20 @@ def chtQuery():
     output = subprocess.run(f"curl {query}", shell=True, capture_output=True, text=True)
     print(output.stdout)
 
+def wolframQuery():
+    query = input("Query : ")
+    r = requests.get('http://api.wolframalpha.com/v1/result?appid={0}&i={1}'.format(wolfram_api_key,parse.quote(query)))
+    print(r.text)
+
 def quit():
     raise SystemExit
 
 commands = {":h" : help,
             ":cw" : currentWeather,
-            ":wf" : weatherForecast,
+            ":fc" : weatherForecast,
             ":astro" : astroForecast,
             ":ch": chtQuery,
+            ":w": wolframQuery,
             ":q" : quit,
             }
 
