@@ -1,5 +1,4 @@
 import os
-from openai import OpenAI
 import requests
 import re
 import tempfile
@@ -8,7 +7,6 @@ from termcolor import colored, cprint
 import subprocess
 
 # Load your API keys from environment variables
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 weather_api_key = os.getenv("WEATHER_API_KEY")
 
 def getDatetime(date_string):
@@ -27,17 +25,8 @@ def help():
     :cw = Get current weather
     :wf = Get 3-day weather forecast
     :astro = Get 3-day astronomical forecast
-    :w = Talk to ChatGPT
     :ch = Browse cheat.sh
     :q = Closes the application
-          """)
-
-def AIHelp():
-    print("""CLI-BUDDY GPT COMMANDS
-------------------
-    :h = Shows commands
-    Enter = Write prompt
-    :q = Closes the conversation
           """)
 
 def currentWeather():
@@ -83,35 +72,6 @@ def astroForecast():
         for astro_hour in (hour for hour in day["hour"] if day["hour"].index(hour)%2==0):
             print("{0:2}h - {1:30} (Visibility: {2:4} km, Cloud coverage: {3:3}%)".format(datetime.fromisoformat(astro_hour["time"]).time().hour, astro_hour["condition"]["text"], astro_hour["vis_km"], astro_hour["cloud"]))
 
-def prompt(ai_conversation):
-    with tempfile.NamedTemporaryFile(mode='w', delete=False) as temp_file:
-        temp_file.write("")
-        temp_file.close()
-        file_path = temp_file.name
-    os.system('%s %s' % (os.getenv('EDITOR'), file_path))
-    with open(file_path, 'r') as file:
-        content = file.read()
-    if content:
-        print(content, end='')
-        print("\ngpt> ", end='')
-        ai_conversation.append({"role": "user", "content": content})
-        chat_completion = client.chat.completions.create(model="gpt-3.5-turbo", messages=ai_conversation)
-        ai_response = chat_completion.choices[0].message.content
-        ai_conversation.append({"role": "assistant", "content": ai_response})
-        print(ai_response)
-
-def AIQuery():
-    ai_conversation = [{"role": "system", "content": "You are a computer assistant. Be concise in your responses."}]
-    print("Enter to open the default editor and write a prompt. :q or :quit to exit the conversation.")
-    while True:
-        print("\nuser> ", end='')
-        user_input = input()
-        if user_input in ai_commands.keys():
-            if user_input == "" or user_input == ":p":
-                ai_commands[user_input](ai_conversation)
-            else:
-                ai_commands[user_input]()
-
 def chtQuery():
     url = "https://cheat.sh/"
     query = url + input("Query : ")
@@ -121,16 +81,10 @@ def chtQuery():
 def quit():
     raise SystemExit
 
-ai_commands = {"" : prompt,
-               ":h" : AIHelp,
-               ":q": quit
-               }
-
 commands = {":h" : help,
             ":cw" : currentWeather,
             ":wf" : weatherForecast,
             ":astro" : astroForecast,
-            ":w": AIQuery,
             ":ch": chtQuery,
             ":q" : quit,
             }
