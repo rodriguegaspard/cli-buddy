@@ -3,7 +3,9 @@ import requests
 from urllib import parse
 from datetime import datetime
 from termcolor import colored, cprint
+from openai import OpenAI
 import subprocess
+import tempfile
 
 # Load your API keys from environment variables
 weather_api_key = os.getenv("WEATHER_API_KEY")
@@ -24,6 +26,7 @@ def help():
     :h = Shows commands
     :cw = Get current weather
     :fc = Get 3-day weather forecast
+    :ai = Ask ChatGPT
     :astro = Get 3-day astronomical forecast
     :c = Browse cheat.sh
     :w = Query Wolfram's Short Answers API
@@ -84,6 +87,33 @@ def wolframQuery():
     r = requests.get('http://api.wolframalpha.com/v1/result?appid={0}&i={1}'.format(wolfram_api_key,parse.quote(query)))
     print(r.text)
 
+def wikiQuery():
+    query = input("Query : ")
+    r = requests.get('https://en.wikipedia.org/w/index.php?title={0}&action=raw'.format(query))
+    print(r.text)
+
+def askAI():
+    with tempfile.NamedTemporaryFile(mode='w', delete=False) as temp_file:
+        temp_file.write("")
+        temp_file.close()
+        file_path = temp_file.name
+    os.system('%s %s' % (os.getenv('EDITOR'), file_path))
+    with open(file_path, 'r') as file:
+        content = file.read()
+    if content:
+        client = OpenAI()
+        completion = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "Give short answers."},
+                {
+                    "role": "user",
+                    "content": content
+                }
+            ]
+        )
+        print(completion.choices[0].message.content)
+
 def quit():
     raise SystemExit
 
@@ -91,8 +121,10 @@ commands = {":h" : help,
             ":cw" : currentWeather,
             ":fc" : weatherForecast,
             ":astro" : astroForecast,
+            ":ai": askAI,
             ":ch": chtQuery,
-            ":w": wolframQuery,
+            ":qa": wolframQuery,
+            ":w": wikiQuery,
             ":q" : quit,
             }
 
