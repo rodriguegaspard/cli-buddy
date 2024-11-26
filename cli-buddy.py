@@ -78,17 +78,17 @@ def astroForecast():
 
 def chtQuery():
     url = "https://cheat.sh/"
-    query = url + input("Query : ")
+    query = url + input("Cheat sheet : ")
     output = subprocess.run(f"curl {query}", shell=True, capture_output=True, text=True)
     print(output.stdout)
 
 def wolframQuery():
-    query = input("Query : ")
-    r = requests.get('http://api.wolframalpha.com/v1/result?appid={0}&i={1}'.format(wolfram_api_key,parse.quote(query)))
+    query = input("Wolfram Alpha query : ")
+    r = requests.get('http://api.wolframalpha.com/v1/result?appid={0}&i={1}&units=metric&timeout=10'.format(wolfram_api_key,parse.quote(query)))
     print(r.text)
 
 def wikiQuery():
-    query = input("Query : ")
+    query = input("Wikipedia query : ")
     r = requests.get('https://en.wikipedia.org/w/index.php?title={0}&action=raw'.format(query))
     print(r.text)
 
@@ -123,8 +123,8 @@ commands = {":h" : help,
             ":astro" : astroForecast,
             ":ai": askAI,
             ":ch": chtQuery,
-            ":qa": wolframQuery,
-            ":w": wikiQuery,
+            ":sa": wolframQuery,
+            ":wiki": wikiQuery,
             ":q" : quit,
             }
 
