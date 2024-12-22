@@ -146,7 +146,7 @@ def astroForecast():
                       day["astro"]["moonset"],
                       day["astro"]["moon_phase"],
                       day["astro"]["moon_illumination"]))
-        for astro_hour in (hour for hour in day["hour"] if day["hour"].index(hour)%2 == 0):
+        for astro_hour in (hour for hour in day["hour"] if day["hour"].index(hour) % 2 == 0):
             print("{0:2}h - {1:30} (Visibility: {2:4} km, Cloud coverage: {3:3}%)"
                   .format(datetime.fromisoformat(astro_hour["time"]).time().hour,
                           astro_hour["condition"]["text"],
@@ -176,7 +176,22 @@ def wikiQuery():
     print(r.text)
 
 
+def changeSystemPrompt():
+    with tempfile.NamedTemporaryFile(mode='w', delete=False) as temp_file:
+        _ = temp_file.write("Give detailed answers.")
+        temp_file.close()
+        file_path = temp_file.name
+    _ = os.system('%s %s' % (os.getenv('EDITOR'), file_path))
+    with open(file_path, 'r') as file:
+        content = file.read()
+    if content:
+        return content
+    else:
+        print("No system prompt specified. No changes had been made.")
+
+
 def askAI():
+    system_prompt = "Give short answers."
     with tempfile.NamedTemporaryFile(mode='w', delete=False) as temp_file:
         _ = temp_file.write("")
         temp_file.close()
@@ -187,15 +202,15 @@ def askAI():
     if content:
         client = OpenAI()
         completion = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": "Give detailed answers."},
-                {
-                    "role": "user",
-                    "content": content
-                }
-            ]
-        )
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {
+                        "role": "user",
+                        "content": content
+                        }
+                    ]
+                )
         print(completion.choices[0].message.content)
 
 
